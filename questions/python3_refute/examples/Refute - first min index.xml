@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 257  -->
+  <question type="coderunner">
+    <name>
+      <text>Refute - first min index</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">One of the options below most correctly describes what the following function does. For every other option, provide a list for which the function's return value is inconsistent with the option's description. Leave the correct option blank.</p>
+<pre># Assume the data is non-empty<br>def get_min(data: list[int]) -&gt; int:
+    current_best = 0
+    for i in range(len(data)):
+        if data[i] &lt; data[current_best]:
+            current_best = i
+    return current_best</pre>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <coderunnertype>python3_refute</coderunnertype>
+    <prototypetype>0</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>10, 20, ...</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>1</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra>(a) It returns the minimum integer in the given list.
+    {{refute_options}}
+
+(b) It returns the largest index at which the minimum value appears in the given list.
+    {{refute_options}}
+
+(c) It returns the smallest index at which the minimum value appears in the given list.
+    {{refute_options}}</globalextra>
+    <useace></useace>
+    <resultcolumns></resultcolumns>
+    <template></template>
+    <iscombinatortemplate></iscombinatortemplate>
+    <allowmultiplestdins></allowmultiplestdins>
+    <answer></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre></testsplitterre>
+    <language></language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader></grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams></templateparams>
+    <hoisttemplateparams>1</hoisttemplateparams>
+    <templateparamslang>twig</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald><![CDATA[{"refute_options":"{[30]} would return {[5]} but the function returns {[5]}"}]]></templateparamsevald>
+    <twigall>1</twigall>
+    <uiplugin></uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>1</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text><![CDATA[given, then, but = {[given]}, {[then]}, {[but]},
+
+def get_min(data: list[int]) -> int:
+    current_best = 0
+    for i in range(len(data)):
+        if data[i] < data[current_best]:
+            current_best = i
+    return current_best
+
+assert min(given) == then
+assert get_min(given) == but]]></text>
+      </testcode>
+      <stdin>
+                <text></text>
+      </stdin>
+      <expected>
+                <text></text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>SHOW</text>
+      </display>
+    </testcase>
+      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text><![CDATA[given, then, but = {[given]}, {[then]}, {[but]},;
+
+def get_min(data: list[int]) -> int:
+    current_best = 0
+    for i in range(len(data)):
+        if data[i] < data[current_best]:
+            current_best = i
+    return current_best
+
+def get_last_min(data: list[int]) -> int:
+    current_best = 0
+    for i in range(len(data)):
+        if data[i] <= data[current_best]:
+            current_best = i
+    return current_best
+
+assert get_last_min(given) == then
+assert get_min(given) == but
+]]></text>
+      </testcode>
+      <stdin>
+                <text></text>
+      </stdin>
+      <expected>
+                <text></text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>SHOW</text>
+      </display>
+    </testcase>
+      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text><![CDATA[given, then, but = r"""{[given]}""", r"""{[then]}""", r"""{[but]}""",;
+assert given == then == but == ""]]></text>
+      </testcode>
+      <stdin>
+                <text></text>
+      </stdin>
+      <expected>
+                <text></text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>SHOW</text>
+      </display>
+    </testcase>
+    </testcases>
+  </question>
+
+</quiz>

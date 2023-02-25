@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="coderunner">
+    <name>
+      <text>Random Make Stack With Pop</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;"></p><p dir="ltr">What is the stack after performing the following operations:</p>
+<pre>{{operations}}</pre><p></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <coderunnertype>python3_literal_value_gapfiller</coderunnertype>
+    <prototypetype>0</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>10, 20, ...</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>1</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra><![CDATA[stack = [ {[20]} <-]]></globalextra>
+    <useace></useace>
+    <resultcolumns></resultcolumns>
+    <template></template>
+    <iscombinatortemplate></iscombinatortemplate>
+    <allowmultiplestdins></allowmultiplestdins>
+    <answer><![CDATA[["{{expect}}"]]]></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre></testsplitterre>
+    <language></language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader></grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams><![CDATA[import random
+import json
+
+size = 5
+
+stack = tuple(random.randint(1, 10) for _ in range(size))
+
+pop_idx = random.randrange(size)
+
+operations = [f"stack.push({it})" for it in stack]
+operations.insert(pop_idx, "stack.pop()")
+operations.insert(pop_idx, f"stack.push({random.randint(1, 10)})")
+
+operations = "\n".join(("stack = Stack()", *operations))
+
+print(json.dumps({
+  "expect": str(stack),
+  "operations": operations
+}))
+]]></templateparams>
+    <hoisttemplateparams>1</hoisttemplateparams>
+    <templateparamslang>python3</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald><![CDATA[{"expect":"(4, 5, 3, 7, 2)","operations":"stack = Stack()\nstack.push(4)\nstack.push(2)\nstack.pop()\nstack.push(5)\nstack.push(3)\nstack.push(7)\nstack.push(2)"}]]></templateparamsevald>
+    <twigall>1</twigall>
+    <uiplugin></uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>1</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text>[{{expect}}]</text>
+      </testcode>
+      <stdin>
+                <text></text>
+      </stdin>
+      <expected>
+                <text></text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>SHOW</text>
+      </display>
+    </testcase>
+    </testcases>
+  </question>
+
+</quiz>

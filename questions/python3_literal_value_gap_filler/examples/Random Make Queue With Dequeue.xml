@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="coderunner">
+    <name>
+      <text>Random Make Queue With Dequeue</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr">What is the queue after performing the following operations:</p>
+<pre>{{operations}}</pre>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <coderunnertype>python3_literal_value_gapfiller</coderunnertype>
+    <prototypetype>0</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>10, 20, ...</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>1</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra><![CDATA[queue = -> | {[20]} | ->]]></globalextra>
+    <useace></useace>
+    <resultcolumns></resultcolumns>
+    <template></template>
+    <iscombinatortemplate></iscombinatortemplate>
+    <allowmultiplestdins></allowmultiplestdins>
+    <answer><![CDATA[["{{expect}}"]]]></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre></testsplitterre>
+    <language></language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader></grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams><![CDATA[import random
+import json
+
+size = 5
+
+queue = tuple(random.randint(1, 10) for _ in range(size + 1))
+
+pop_idx = random.randrange(1, size)
+
+operations = [f"queue.enqueue({it})" for it in queue]
+operations.insert(pop_idx, "queue.dequeue()")
+
+operations = "\n".join(("queue = Queue()", *operations))
+
+print(json.dumps({
+  "expect": str(queue[:0:-1]),
+  "operations": operations
+}))
+]]></templateparams>
+    <hoisttemplateparams>1</hoisttemplateparams>
+    <templateparamslang>python3</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald><![CDATA[{"expect":"(1, 3, 3, 10, 4)","operations":"queue = Queue()\nqueue.enqueue(5)\nqueue.enqueue(4)\nqueue.enqueue(10)\nqueue.enqueue(3)\nqueue.dequeue()\nqueue.enqueue(3)\nqueue.enqueue(1)"}]]></templateparamsevald>
+    <twigall>1</twigall>
+    <uiplugin></uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>1</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text>[{{expect}}]</text>
+      </testcode>
+      <stdin>
+                <text></text>
+      </stdin>
+      <expected>
+                <text></text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>SHOW</text>
+      </display>
+    </testcase>
+    </testcases>
+  </question>
+
+</quiz>

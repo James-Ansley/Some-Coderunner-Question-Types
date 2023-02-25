@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="coderunner">
+    <name>
+      <text>PROTOTYPE_python3_literal_value_gapfiller</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">A subtype of the gapfiller question type that parses all fields as literal python values.</p>
+<p dir="ltr" style="text-align: left;">To construct a question:</p>
+<ol>
+    <li>Add the fields and test you want to the global_extra field as normal – with fields and text e.g. {[20]}, {[20, 2]}</li>
+    <li>Consider setting a new "maxfieldlength" param in "template params" – the default is 50 characters per field.</li>
+    <li>Add ONE (1) testcase and set the test code as a python list literal of the literal values for each of the fields in order.<br>For example, if your question requires the fields "Hello" and {"a": 1, "b": 2} in that order, the testcase code would be (spacing optional):<br>
+        <code><pre>[<br>  "Hello",<br>  {"a": 1, "b": 2},<br>]</pre></code>
+    </li>
+</ol>
+<p>If randomly generating fields as template parameters, some datatypes do not "jsonify" to python very well (e.g. tuples), in this case, convert the template parameter to a string (e.g. <code>"(1, 2)"</code>) and use this in the testcase<br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <coderunnertype>python3_literal_value_gapfiller</coderunnertype>
+    <prototypetype>2</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>10, 20, ...</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>1</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra></globalextra>
+    <useace>1</useace>
+    <resultcolumns></resultcolumns>
+    <template><![CDATA[import ast
+import json
+from itertools import zip_longest
+
+
+class FieldTooLong(Exception):
+    ...
+
+
+param_dump = """{{ QUESTION.parameters | json_encode | e('py') }}"""
+answer_dump = """{{ STUDENT_ANSWER | e('py') }}"""
+testcase_dump = """{{ TESTCASES | json_encode | e('py') }}"""
+
+defaults = {
+    "gapfiller_ui_source": "globalextra",
+    "proscribedsubstrings": [],
+    "maxfieldlength": 50,
+}
+
+PARAMS = defaults | json.loads(param_dump)
+
+expect = ast.literal_eval(json.loads(testcase_dump)[0]["testcode"])
+
+try:
+    fields = json.loads(answer_dump)
+    if any(len(f) > PARAMS["maxfieldlength"] for f in fields):
+        raise FieldTooLong
+
+    fields = [ast.literal_eval(f) for f in fields]
+except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+    is_correct = False
+    message = "<h3>Incorrect.</h3>"
+    
+except FieldTooLong:
+    is_correct = False
+    message = f"Field too long – max {PARAMS['maxfieldlength']} chars"
+    
+else:
+    is_correct = all(field == ans for field, ans in zip_longest(fields, expect))
+    message = "<h3>Success!</h3>" if is_correct else "<h3>Incorrect.</h3>"
+
+outcome = {
+    'fraction': int(is_correct),
+    'testresults': [],
+    'epiloguehtml': message,
+    'columnformats': [],
+    'showdifferences': False
+}
+
+print(json.dumps(outcome))
+]]></template>
+    <iscombinatortemplate>1</iscombinatortemplate>
+    <allowmultiplestdins>0</allowmultiplestdins>
+    <answer></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre><![CDATA[|#<ab@17943918#@>#\n|ms]]></testsplitterre>
+    <language>python3</language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader>TemplateGrader</grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams></templateparams>
+    <hoisttemplateparams>1</hoisttemplateparams>
+    <templateparamslang>None</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald>{}</templateparamsevald>
+    <twigall>0</twigall>
+    <uiplugin>gapfiller</uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>1</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+    </testcases>
+  </question>
+
+</quiz>
