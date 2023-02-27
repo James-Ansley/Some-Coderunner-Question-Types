@@ -6,28 +6,34 @@ import json
 import re
 import subprocess
 import sys
+from random import choices
+from string import ascii_uppercase, digits
+
+test_case_code_template = """
+import unittest
+
+
+{test_case}
+
+
+{answer}
+
+
+tests = unittest.defaultTestLoader.loadTestsFromName("__main__")
+runner = unittest.TextTestRunner()
+result = runner.run(tests)
+
+if result.wasSuccessful():
+    print("{secret}")
+"""
 
 
 class TestCase:
-    def __init__(self, dict_rep):
+    def __init__(self, testcode, **kwargs):
         """
         Construct a testcase from a dictionary representation obtained via JSON
         """
-        self.testcode = dict_rep["testcode"]
-        self.stdin = dict_rep["stdin"]
-        self.expected = dict_rep["expected"]
-
-        extra = json.loads(dict_rep["extra"])
-        self.is_correct = extra["correct"]
-        self.message = extra.get("message", "")
-        self.display = dict_rep["display"]
-        try:
-            self.testtype = int(dict_rep["testtype"])
-        except:
-            self.testtype = 0
-        self.hiderestiffail = bool(int(dict_rep["hiderestiffail"]))
-        self.useasexample = bool(int(dict_rep["useasexample"]))
-        self.mark = float(dict_rep["mark"])
+        self.testcode = testcode
 
 
 def parse_params():
@@ -60,7 +66,7 @@ SPLITTER = r"\{\[.*?\]\}"
 
 def parse_testcases():
     testcase_dump = """{{ TESTCASES | json_encode | e('py') }}"""
-    return [TestCase(test) for test in json.loads(testcase_dump)]
+    return [TestCase(**test) for test in json.loads(testcase_dump)]
 
 
 def parse_fields():
@@ -95,13 +101,12 @@ def parse_answer():
     return fill_gaps(global_extra_dump, fields)
 
 
-def run_one_test(prog, stdin):
+def run_one_test(prog):
     with open("prog.py", "w") as src:
         print(prog, file=src)
     try:
         output = subprocess.check_output(
             ["python3", "prog.py"],
-            input=stdin,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
@@ -110,22 +115,22 @@ def run_one_test(prog, stdin):
     return output
 
 
+def make_test_code(test_case, answer, secret):
+    return test_case_code_template.format(
+        test_case=test_case, answer=answer, secret=secret
+    )
+
+
 def run_tests():
     answer = parse_answer()
-    tests = parse_testcases()
+    test = parse_testcases()[0]
 
-    is_correct = True
-    message = ""
+    secret = ''.join(choices(ascii_uppercase + digits, k=32))
+    testcode = make_test_code(test.testcode, answer, secret)
+    output = run_one_test(testcode).strip()
 
-    for test in tests:
-        testcode = f"{test.testcode}\n\n{answer}"
-        expected = test.expected.rstrip()
-        output = run_one_test(testcode, test.stdin).rstrip()
-
-        is_correct &= test.is_correct == (output == expected)
-
-        if (test.is_correct != (output == expected)) and test.message:
-            message += f"\n<p>{test.message}</p>"
+    is_correct = output.endswith(secret)
+    message = f"<pre>{output.removesuffix(secret)}</pre>"
 
     message = f"<h3>{'Success!' if is_correct else 'Incorrect.'}</h3>" + message
     dump_output_and_quit(int(is_correct), message)

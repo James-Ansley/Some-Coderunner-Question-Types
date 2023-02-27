@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="coderunner">
+    <name>
+      <text>PROTOTYPE_python3_unit_test_filler</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p dir="ltr" style="text-align: left;">temp desc.<br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <coderunnertype>python3_unit_test_filler</coderunnertype>
+    <prototypetype>2</prototypetype>
+    <allornothing>1</allornothing>
+    <penaltyregime>10, 20, ...</penaltyregime>
+    <precheck>0</precheck>
+    <hidecheck>0</hidecheck>
+    <showsource>0</showsource>
+    <answerboxlines>1</answerboxlines>
+    <answerboxcolumns>100</answerboxcolumns>
+    <answerpreload></answerpreload>
+    <globalextra></globalextra>
+    <useace>1</useace>
+    <resultcolumns></resultcolumns>
+    <template><![CDATA["""
+The prototype template for a python gap-filler.
+"""
+
+import json
+import re
+import subprocess
+import sys
+from random import choices
+from string import ascii_uppercase, digits
+
+test_case_code_template = """
+import unittest
+
+
+{test_case}
+
+
+{answer}
+
+
+tests = unittest.defaultTestLoader.loadTestsFromName("__main__")
+runner = unittest.TextTestRunner()
+result = runner.run(tests)
+
+if result.wasSuccessful():
+    print("{secret}")
+"""
+
+
+class TestCase:
+    def __init__(self, testcode, **kwargs):
+        """
+        Construct a testcase from a dictionary representation obtained via JSON
+        """
+        self.testcode = testcode
+
+
+def parse_params():
+    param_dump = """{{ QUESTION.parameters | json_encode | e('py') }}"""
+    defaults = {
+        "gapfiller_ui_source": "globalextra",
+        "proscribedsubstrings": [],
+        "maxfieldlength": 50,
+        "is_precheck": "{{ IS_PRECHECK }}" == "1",
+    }
+    params = defaults | json.loads(param_dump)
+    return params
+
+
+def dump_output_and_quit(mark: float, epilogue: str, exit_code: int = 0):
+    outcome = {
+        'fraction': mark,
+        'testresults': [],
+        'epiloguehtml': epilogue,
+        'columnformats': [],
+        'showdifferences': False
+    }
+    print(json.dumps(outcome))
+    sys.exit(exit_code)
+
+
+PARAMS = parse_params()
+SPLITTER = r"\{\[.*?\]\}"
+
+
+def parse_testcases():
+    testcase_dump = """{{ TESTCASES | json_encode | e('py') }}"""
+    return [TestCase(**test) for test in json.loads(testcase_dump)]
+
+
+def parse_fields():
+    answer_dump = """{{ STUDENT_ANSWER | e('py') }}"""
+    fields = json.loads(answer_dump)
+    max_len = PARAMS["maxfieldlength"]
+    if any(len(f) > max_len for f in fields):
+        msg = f"Field too long - max field length is {max_len}"
+        dump_output_and_quit(0, msg, 1)
+    return fields
+
+
+def fill_gaps(code, fields):
+    """
+    Replaces the GapFiller replacement fields in the code with the given values.
+    """
+    segments = re.split(SPLITTER, code)
+    prog = segments[0].splitlines(keepends=True)
+    for value, segment in zip(fields, segments[1:]):
+        value = value.splitlines(keepends=True)
+        if len(prog) and len(value) > 1:
+            indent = " " * len(prog[-1])
+            value = value[0], *(indent + v for v in value[1:])
+        prog.extend(value)
+        prog.extend(segment.splitlines(keepends=True))
+    return "".join(prog)
+
+
+def parse_answer():
+    global_extra_dump = """{{ QUESTION.globalextra | e('py') }}"""
+    fields = parse_fields()
+    return fill_gaps(global_extra_dump, fields)
+
+
+def run_one_test(prog):
+    with open("prog.py", "w") as src:
+        print(prog, file=src)
+    try:
+        output = subprocess.check_output(
+            ["python3", "prog.py"],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
+    except subprocess.CalledProcessError as e:
+        output = e.output + '\n' if e.output else ''
+    return output
+
+
+def make_test_code(test_case, answer, secret):
+    return test_case_code_template.format(
+        test_case=test_case, answer=answer, secret=secret
+    )
+
+
+def run_tests():
+    answer = parse_answer()
+    test = parse_testcases()[0]
+
+    secret = ''.join(choices(ascii_uppercase + digits, k=32))
+    testcode = make_test_code(test.testcode, answer, secret)
+    output = run_one_test(testcode).strip()
+
+    is_correct = output.endswith(secret)
+    message = f"<pre>{output.removesuffix(secret)}</pre>"
+
+    message = f"<h3>{'Success!' if is_correct else 'Incorrect.'}</h3>" + message
+    dump_output_and_quit(int(is_correct), message)
+
+
+run_tests()
+]]></template>
+    <iscombinatortemplate>1</iscombinatortemplate>
+    <allowmultiplestdins>0</allowmultiplestdins>
+    <answer></answer>
+    <validateonsave>1</validateonsave>
+    <testsplitterre><![CDATA[|#<ab@17943918#@>#\n|ms]]></testsplitterre>
+    <language>python3</language>
+    <acelang></acelang>
+    <sandbox></sandbox>
+    <grader>TemplateGrader</grader>
+    <cputimelimitsecs></cputimelimitsecs>
+    <memlimitmb></memlimitmb>
+    <sandboxparams></sandboxparams>
+    <templateparams></templateparams>
+    <hoisttemplateparams>1</hoisttemplateparams>
+    <templateparamslang>None</templateparamslang>
+    <templateparamsevalpertry>0</templateparamsevalpertry>
+    <templateparamsevald>{}</templateparamsevald>
+    <twigall>0</twigall>
+    <uiplugin>gapfiller</uiplugin>
+    <uiparameters></uiparameters>
+    <attachments>0</attachments>
+    <attachmentsrequired>0</attachmentsrequired>
+    <maxfilesize>10240</maxfilesize>
+    <filenamesregex></filenamesregex>
+    <filenamesexplain></filenamesexplain>
+    <displayfeedback>1</displayfeedback>
+    <giveupallowed>0</giveupallowed>
+    <prototypeextra></prototypeextra>
+    <testcases>
+    </testcases>
+  </question>
+
+</quiz>
